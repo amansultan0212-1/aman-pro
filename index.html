@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pakistan Interactive Web GIS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root{--matcha:#718866;--matcha-dark:#40533c;--matcha-light:#eaf2e5;--pink:#e7a9ba;--pink-dark:#a85e76;--pink-light:#fff0f5;--cream:#fffdfb;--text:#283328;--border:#d8e2d3}
+    *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:var(--matcha-light)}
+    body{display:flex;flex-direction:column;overflow:hidden}
+    header{height:82px;flex:0 0 82px;background:var(--cream);border-bottom:4px solid var(--pink);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;box-shadow:0 3px 12px #40533c20;z-index:1000}
+    .title-wrap h1{margin:0;color:var(--matcha-dark);font-size:25px}.title-wrap p{margin:4px 0 0;color:#667062;font-size:13px}.badge{background:var(--pink-light);border:1px solid var(--pink);color:var(--pink-dark);padding:8px 13px;border-radius:20px;font-weight:bold;font-size:12px}
+    .layout{display:grid;grid-template-columns:275px 1fr;min-height:0;flex:1}
+    aside{background:var(--cream);border-right:1px solid var(--border);padding:13px;overflow:auto}.card{background:white;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 5px 16px #40533c12}.card h2,.card h3{margin:0 0 8px;color:var(--matcha-dark)}.student-card{background:linear-gradient(135deg,var(--pink-light),#fff);border-color:#efc3d0}.student-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px dashed #ead1d8}.student-row:last-child{border-bottom:0}.student-row b{color:var(--pink-dark)}.student-row span{text-align:right;color:var(--text);font-weight:600}.card h2{font-size:16px}.card h3{font-size:14px}.card p{font-size:12px;line-height:1.45;margin:0}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{text-align:center;background:var(--pink-light);border:1px solid #f0c7d3;border-radius:12px;padding:9px}.stat strong{display:block;font-size:21px;color:var(--pink-dark)}.stat span{font-size:11px}.legend{display:flex;align-items:center;gap:8px;font-size:12px;margin:7px 0}.dot{border-radius:50%;display:inline-block;flex:0 0 auto}.city-dot{width:14px;height:14px;background:var(--pink);border:3px solid white;box-shadow:0 0 0 2px var(--pink-dark)}.t1{width:9px;height:9px;background:var(--matcha);border:2px solid var(--matcha-dark)}.t2{width:15px;height:15px;background:var(--matcha);border:2px solid var(--matcha-dark)}.t3{width:21px;height:21px;background:var(--matcha);border:2px solid var(--matcha-dark)}
+    .chart-wrap{height:auto;display:flex;flex-direction:column;gap:3px}.bar{display:flex;align-items:center;gap:6px;margin:0;font-size:10px;min-height:16px}.bar label{width:62px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bar-track{height:8px;background:#edf1ea;border-radius:10px;flex:1;overflow:hidden}.bar-fill{height:100%;background:var(--pink);border-radius:10px}.bar-value{width:34px;text-align:right;color:var(--pink-dark);font-weight:bold}
+    #map{width:100%;height:100%;min-height:0;background:#dfead9}.map-note{position:absolute;left:12px;bottom:12px;z-index:500;background:#fffdfbe8;border:1px solid var(--border);border-radius:16px;padding:7px 10px;font-size:11px;color:var(--matcha-dark);box-shadow:0 3px 10px #40533c22}
+    .map-box{position:relative;min-width:0;min-height:0}
+    footer{height:30px;flex:0 0 30px;background:var(--matcha-dark);color:white;display:flex;align-items:center;justify-content:center;font-size:10px}
+    .leaflet-control-layers{border:1px solid var(--border)!important;border-radius:12px!important;box-shadow:0 5px 15px #40533c22!important}.leaflet-control-layers-expanded{font-size:12px;color:var(--text)}.leaflet-bar a{color:var(--matcha-dark)!important;background:var(--cream)!important}.leaflet-popup-content-wrapper{border-radius:13px;border:1px solid var(--pink)}.leaflet-popup-content{margin:11px 13px}.popup-title{margin:0 0 8px;color:var(--matcha-dark);font-size:15px}.popup-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;font-size:12px}.popup-grid b{color:var(--pink-dark)}
+    @media(max-width:800px){body{overflow:auto}.layout{grid-template-columns:1fr;grid-template-rows:auto 65vh}aside{border-right:0;border-bottom:1px solid var(--border)}header{height:auto;flex-basis:auto}.badge{display:none}.map-note{display:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="title-wrap"><h1>Pakistan Interactive Web GIS</h1><p>Lab Assignment No. 1 • Cities, Weather Stations & Environmental Information</p></div>
+  <div class="badge">REMOTE SENSING & GIS</div>
+</header>
+<div class="layout">
+  <aside>
+    <div class="card student-card"><h2>Student Information</h2><div class="student-row"><b>Name</b><span>Aman Sultan</span></div><div class="student-row"><b>Registration No.</b><span>FA23-BRG-013</span></div></div>
+    <div class="card"><h2>Map Overview</h2><p>Interactive Web GIS of Pakistan containing 15 major cities and 15 weather stations. Use the layer control to change basemaps and switch GIS layers on or off.</p></div>
+    <div class="stats"><div class="stat"><strong>15</strong><span>Major Cities</span></div><div class="stat"><strong>15</strong><span>Weather Stations</span></div></div>
+    <div class="card" style="margin-top:10px"><h3>City Symbol</h3><div class="legend"><span class="dot city-dot"></span> Major city</div><p>Click a city for Name, Province/Region and Type.</p></div>
+    <div class="card"><h3>Temperature Symbols</h3><div class="legend"><span class="dot t1"></span> Below 25°C — Small</div><div class="legend"><span class="dot t2"></span> 25–30°C — Medium</div><div class="legend"><span class="dot t3"></span> Above 30°C — Large</div><p>Weather station symbol size is determined by temperature.</p></div>
+    <div class="card"><h3>Temperature Chart</h3><div id="chart" class="chart-wrap"></div></div>
+    <div class="card"><h3>Required Interaction</h3><p>✓ Popups<br>✓ Zoom / Pan<br>✓ Layer control<br>✓ Basemap switching<br>✓ City and weather layers on/off<br>✓ Scale bar</p></div>
+  </aside>
+  <main class="map-box"><div id="map"></div><div class="map-note">OpenStreetMap / Esri Satellite • Academic demonstration data</div></main>
+</div>
+<footer>Pakistan Interactive Web GIS — Lab Assignment No. 1</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const cities=[
+{name:'Islamabad',province:'Islamabad Capital Territory',type:'Federal Capital',lat:33.6844,lng:73.0479},
+{name:'Rawalpindi',province:'Punjab',type:'Metropolitan City',lat:33.5651,lng:73.0169},
+{name:'Lahore',province:'Punjab',type:'Provincial Capital',lat:31.5204,lng:74.3587},
+{name:'Faisalabad',province:'Punjab',type:'Industrial City',lat:31.4504,lng:73.1350},
+{name:'Multan',province:'Punjab',type:'Major City',lat:30.1575,lng:71.5249},
+{name:'Gujranwala',province:'Punjab',type:'Industrial City',lat:32.1877,lng:74.1945},
+{name:'Peshawar',province:'Khyber Pakhtunkhwa',type:'Provincial Capital',lat:34.0151,lng:71.5249},
+{name:'Abbottabad',province:'Khyber Pakhtunkhwa',type:'Hill City',lat:34.1688,lng:73.2215},
+{name:'Mardan',province:'Khyber Pakhtunkhwa',type:'Major City',lat:34.1989,lng:72.0231},
+{name:'Karachi',province:'Sindh',type:'Provincial Capital / Megacity',lat:24.8607,lng:67.0011},
+{name:'Hyderabad',province:'Sindh',type:'Major City',lat:25.3960,lng:68.3578},
+{name:'Sukkur',province:'Sindh',type:'Major City',lat:27.7244,lng:68.8228},
+{name:'Quetta',province:'Balochistan',type:'Provincial Capital',lat:30.1798,lng:66.9750},
+{name:'Gwadar',province:'Balochistan',type:'Port City',lat:25.1264,lng:62.3225},
+{name:'Muzaffarabad',province:'Azad Jammu & Kashmir',type:'Regional Capital',lat:34.3700,lng:73.4711}
+];
+const weather=[
+{name:'Islamabad Weather Station',temperature:27.4,rainfall:18.2,lat:33.7000,lng:73.1000},
+{name:'Rawalpindi Weather Station',temperature:28.1,rainfall:16.6,lat:33.6100,lng:73.0600},
+{name:'Lahore Weather Station',temperature:31.8,rainfall:12.4,lat:31.5500,lng:74.3300},
+{name:'Faisalabad Weather Station',temperature:30.6,rainfall:7.8,lat:31.4700,lng:73.1100},
+{name:'Multan Weather Station',temperature:33.2,rainfall:3.9,lat:30.2000,lng:71.4700},
+{name:'Gujranwala Weather Station',temperature:30.2,rainfall:11.1,lat:32.2200,lng:74.1800},
+{name:'Peshawar Weather Station',temperature:29.5,rainfall:9.7,lat:34.0400,lng:71.5900},
+{name:'Abbottabad Weather Station',temperature:22.8,rainfall:24.5,lat:34.1500,lng:73.2500},
+{name:'Mardan Weather Station',temperature:28.8,rainfall:10.3,lat:34.2300,lng:72.0500},
+{name:'Karachi Weather Station',temperature:29.1,rainfall:5.2,lat:24.9000,lng:67.0800},
+{name:'Hyderabad Weather Station',temperature:32.0,rainfall:4.1,lat:25.4200,lng:68.3900},
+{name:'Sukkur Weather Station',temperature:34.6,rainfall:1.8,lat:27.7600,lng:68.8600},
+{name:'Quetta Weather Station',temperature:20.7,rainfall:2.9,lat:30.2100,lng:66.9900},
+{name:'Gwadar Weather Station',temperature:28.0,rainfall:1.2,lat:25.1600,lng:62.3500},
+{name:'Muzaffarabad Weather Station',temperature:24.1,rainfall:28.7,lat:34.3900,lng:73.5000}
+];
+const map=L.map('map',{zoomControl:true,center:[30.6,69.3],zoom:5,minZoom:4,maxZoom:18});
+const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'});
+const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles © Esri'});
+osm.addTo(map);
+const cityLayer=L.layerGroup().addTo(map), weatherLayer=L.layerGroup().addTo(map);
+const esc=v=>String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const popup=(title,rows)=>`<h3 class="popup-title">${esc(title)}</h3><div class="popup-grid">${rows.map(r=>`<b>${esc(r[0])}</b><span>${esc(r[1])}</span>`).join('')}</div>`;
+const radius=t=>t<25?6:t<=30?10:14;
+cities.forEach(c=>L.circleMarker([c.lat,c.lng],{radius:7,color:'#a85e76',weight:3,fillColor:'#e7a9ba',fillOpacity:.95}).bindPopup(popup(c.name,[['Province/Region',c.province],['Type',c.type]])).bindTooltip(c.name).addTo(cityLayer));
+weather.forEach(w=>L.circleMarker([w.lat,w.lng],{radius:radius(w.temperature),color:'#40533c',weight:2,fillColor:'#718866',fillOpacity:.9}).bindPopup(popup(w.name,[['Temperature',w.temperature.toFixed(1)+' °C'],['Rainfall',w.rainfall.toFixed(1)+' mm']])).bindTooltip(w.name+' • '+w.temperature.toFixed(1)+'°C').addTo(weatherLayer));
+L.control.layers({'OpenStreetMap':osm,'Satellite Imagery':satellite},{'Cities (15)':cityLayer,'Weather Stations (15)':weatherLayer},{collapsed:false,position:'topright'}).addTo(map);
+L.control.scale({imperial:false,position:'bottomleft'}).addTo(map);
+map.fitBounds([...cities.map(c=>[c.lat,c.lng]),...weather.map(w=>[w.lat,w.lng])],{padding:[25,25]});
+const max=Math.max(...weather.map(w=>w.temperature));document.getElementById('chart').innerHTML=weather.map(w=>`<div class="bar"><label>${w.name.replace(' Weather Station','')}</label><div class="bar-track"><div class="bar-fill" style="width:${w.temperature/max*100}%"></div></div><span class="bar-value">${w.temperature.toFixed(1)}°</span></div>`).join('');
+setTimeout(()=>map.invalidateSize(),300);
+</script>
+</body>
+</html>
